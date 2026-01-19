@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "236240011865",
+    "project_id": "quizup-pro",
+    "storage_bucket": "quizup-pro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236240011865:android:84ff57d7880f8dd9b52748",
+        "android_client_info": {
+          "package_name": "com.david.quizuppro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeYqJHNUN3lT6fIWrqbJ0LrBIjadFGBfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

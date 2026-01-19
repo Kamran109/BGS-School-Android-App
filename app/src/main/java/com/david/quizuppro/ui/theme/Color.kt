@@ -1,0 +1,31 @@
+package com.david.quizuppro.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
+
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
+
+
+// BGS Theme Colors
+val DarkBlue = Color(0xFF2C3E58)
+val NavyBlue = Color(0xFF364B65)
+val White = Color(0xFFFFFFFF)
+val LightGray = Color(0xFFF5F5F5)
+
+
+val Primary = Color(0xFF2C3E58)
+val PrimaryDark = Color(0xFF1F2D3D)
+val Accent = Color(0xFF364B65)
+val Background = Color(0xFF2C3E58)
+
+
+//<color name="primary">#2C3E58</color>
+//<color name="primary_dark">#1F2D3D</color>
+//<color name="accent">#364B65</color>
+//<color name="white">#FFFFFF</color>
+//<color name="background">#2C3E58</color>
