@@ -3,21 +3,27 @@ package com.david.quizuppro.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.david.quizuppro.QuizApplication
 import com.david.quizuppro.data.QuizRepository
-import com.david.quizuppro.data.local.UserPreferences
+import com.david.quizuppro.data.local.PrefsHelper
 import com.david.quizuppro.data.remote.FirestoreRepository
 import com.david.quizuppro.model.Difficulty
+import com.david.quizuppro.ui.screens.LoginScreen
+import com.david.quizuppro.ui.screens.UnitSelectionScreen
 import com.david.quizuppro.ui.screens.CategorySelectionScreen
-import com.david.quizuppro.ui.screens.LeaderboardScreen
 import com.david.quizuppro.ui.screens.ProfileScreen
 import com.david.quizuppro.ui.screens.QuizScreen
+import com.david.quizuppro.ui.screens.LeaderboardScreen
 import com.david.quizuppro.ui.screens.ResultScreen
+import com.david.quizuppro.ui.screens.SignUpScreen
+import com.david.quizuppro.ui.screens.splash.SplashScreen
+import com.david.quizuppro.viewmodel.AuthViewModel
 import com.david.quizuppro.viewmodel.LeaderboardViewModel
 import com.david.quizuppro.viewmodel.LeaderboardViewModelFactory
 import com.david.quizuppro.viewmodel.ProfileViewModel
@@ -25,58 +31,103 @@ import com.david.quizuppro.viewmodel.ProfileViewModelFactory
 import com.david.quizuppro.viewmodel.QuizViewModel
 import com.david.quizuppro.viewmodel.QuizViewModelFactory
 
-
-//@Preview(showBackground = true)
 @Composable
 fun QuizNavGraph(
     navController: NavHostController
 ) {
+
     val context = LocalContext.current
     val application = context.applicationContext as QuizApplication
     val database = application.database
-    val userPreferences = UserPreferences(context)
+    val userPreferences = PrefsHelper(context)
     val firestoreRepository = FirestoreRepository()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.CategorySelection.route
-    ) {
-        composable(Screen.CategorySelection.route) {
+        startDestination = Screen.SplashScreen
+    ){
+
+        composable<Screen.SplashScreen> {
+            SplashScreen(navController)
+        }
+
+/*<--------------------------------LoginScreen--------------------------------------------------------->*/
+
+        composable<Screen.LoginScreen> {
+            LoginScreen(
+                navController = navController,
+                viewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer {
+                            AuthViewModel(userPreferences)
+                        }
+                    }
+                )
+            )
+        }
+
+/*<--------------------------------SignUpScreen--------------------------------------------------------->*/
+
+        composable<Screen.SignUpScreen> {
+            SignUpScreen()
+        }
+
+/*<--------------------------------CategorySelectionScreen--------------------------------------------->*/
+
+        composable<Screen.CategorySelectionScreen> {
             CategorySelectionScreen(
                 onCategorySelected = { categoryId, difficulty ->
                     val category = QuizRepository.categories.find { it.id == categoryId }
                     category?.let {
                         navController.navigate(
-                            Screen.Quiz.createRoute(categoryId, it.name, difficulty.name)
+                            Screen.UnitSelectionScreen(
+                                categoryId = categoryId,
+                                categoryName = it.name
+                            )
                         )
                     }
                 },
                 onProfileClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(Screen.ProfileScreen)
                 },
                 onLeaderboardClick = {
-                    navController.navigate(Screen.Leaderboard.route)
+                    navController.navigate(Screen.LeaderboardScreen)
                 }
             )
         }
 
-        composable(
-            route = Screen.Quiz.route,
-            arguments = listOf(
-                navArgument("categoryId") { type = NavType.IntType },
-                navArgument("categoryName") { type = NavType.StringType },
-                navArgument("difficulty") { type = NavType.StringType }
+/*<--------------------------------UnitSelectionScreen--------------------------------------------------------->*/
+
+        composable <Screen.UnitSelectionScreen>{ backStackEntry ->
+            val screen: Screen.UnitSelectionScreen = backStackEntry.toRoute()
+            UnitSelectionScreen(
+                categoryId = screen.categoryId,
+                categoryName = screen.categoryName,
+                onUnitSelected = { unitId ->
+                    navController.navigate(
+                        Screen.QuizScreen(
+                            categoryId = screen.categoryId,
+                            categoryName = screen.categoryName,
+                            unitId = unitId,
+                            difficulty = "MEDIUM"
+                        )
+                    )
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                }
             )
-        ) { backStackEntry ->
-            val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 1
-            val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
-            val difficultyString = backStackEntry.arguments?.getString("difficulty") ?: "MEDIUM"
+        }
+
+/*<--------------------------------QuizScreen--------------------------------------------------------->*/
+
+        composable<Screen.QuizScreen> { backStackEntry ->
+            val screen: Screen.QuizScreen = backStackEntry.toRoute()
             val difficulty = try {
-                Difficulty.valueOf(difficultyString)
-            } catch (e: Exception) {
+                Difficulty.valueOf(screen.difficulty)
+            }catch (e: Exception){
                 Difficulty.MEDIUM
             }
-
             val viewModel: QuizViewModel = viewModel(
                 factory = QuizViewModelFactory(
                     database.quizDao(),
@@ -85,41 +136,35 @@ fun QuizNavGraph(
                     application.applicationScope
                 )
             )
-
             QuizScreen(
-                categoryId = categoryId,
-                categoryName = categoryName,
+                categoryId = screen.categoryId,
+                categoryName = screen.categoryName,
+                unitId = screen.unitId,
                 difficulty = difficulty,
                 onBackPressed = {
                     navController.popBackStack()
                 },
                 onQuizComplete = { score, totalQuestions ->
-                    navController.navigate(
-                        Screen.Result.createRoute(score, totalQuestions)
-                    ) {
-                        popUpTo(Screen.CategorySelection.route)
-                    }
+                    navController.navigate(Screen.ResultScreen(
+                        score = score,
+                        totalQuestions = totalQuestions
+                    ))
+
                 },
                 viewModel = viewModel
             )
         }
 
-        composable(
-            route = Screen.Result.route,
-            arguments = listOf(
-                navArgument("score") { type = NavType.IntType },
-                navArgument("totalQuestions") { type = NavType.IntType }
-            )
-        ) { backStackEntry ->
-            val score = backStackEntry.arguments?.getInt("score") ?: 0
-            val totalQuestions = backStackEntry.arguments?.getInt("totalQuestions") ?: 10
+/*<--------------------------------ResultScreen--------------------------------------------------------->*/
 
+        composable <Screen.ResultScreen> { backStackEntry ->
+            val screen: Screen.ResultScreen = backStackEntry.toRoute()
             ResultScreen(
-                score = score,
-                totalQuestions = totalQuestions,
+                score = screen.score,
+                totalQuestions = screen.totalQuestions,
                 onBackToHome = {
-                    navController.navigate(Screen.CategorySelection.route) {
-                        popUpTo(Screen.CategorySelection.route) {
+                    navController.navigate(Screen.CategorySelectionScreen){
+                        popUpTo (Screen.CategorySelectionScreen){
                             inclusive = true
                         }
                     }
@@ -127,24 +172,27 @@ fun QuizNavGraph(
             )
         }
 
-        composable(Screen.Profile.route) {
-            val viewModel: ProfileViewModel = viewModel(
+/*<--------------------------------ProfileScreen--------------------------------------------------------->*/
+
+        composable <Screen.ProfileScreen>{
+            val viewModel = viewModel<ProfileViewModel>(
                 factory = ProfileViewModelFactory(database.quizDao(), userPreferences)
             )
-
             ProfileScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 },
                 viewModel = viewModel
             )
+
         }
 
-        composable(Screen.Leaderboard.route) {
-            val viewModel: LeaderboardViewModel = viewModel(
+/*<--------------------------------LeaderboardScreen--------------------------------------------------------->*/
+
+        composable <Screen.LeaderboardScreen>{
+            val viewModel = viewModel<LeaderboardViewModel>(
                 factory = LeaderboardViewModelFactory()
             )
-
             LeaderboardScreen(
                 onBackPressed = {
                     navController.popBackStack()
@@ -152,5 +200,9 @@ fun QuizNavGraph(
                 viewModel = viewModel
             )
         }
+
+
+
     }
+
 }

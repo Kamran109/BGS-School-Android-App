@@ -1,14 +1,44 @@
 package com.david.quizuppro.navigation
 
+import kotlinx.serialization.Serializable
 
-sealed class Screen(val route: String) {
-    object CategorySelection : Screen("category_selection")
-    object Quiz : Screen("quiz/{categoryId}/{categoryName}/{difficulty}") {
-        fun createRoute(categoryId: Int, categoryName: String, difficulty: String) = "quiz/$categoryId/$categoryName/$difficulty"
-    }
-    object Result : Screen("result/{score}/{totalQuestions}") {
-        fun createRoute(score: Int, totalQuestions: Int) = "result/$score/$totalQuestions"
-    }
-    object Profile : Screen("profile")
-    object Leaderboard : Screen("leaderboard")
+@Serializable
+sealed class Screen{
+
+    @Serializable
+    object SplashScreen : Screen()
+
+    @Serializable
+    object SignUpScreen : Screen()
+
+    @Serializable
+    object LoginScreen : Screen()
+    @Serializable
+    object CategorySelectionScreen : Screen()
+    @Serializable
+    data class UnitSelectionScreen(
+        val categoryId: Int,
+        val categoryName: String
+    ) : Screen()
+
+    @Serializable
+    data class QuizScreen(
+        val categoryId: Int,
+        val categoryName: String,
+        val unitId: Int,
+        val difficulty: String
+    ) : Screen()
+
+    @Serializable
+    object ProfileScreen : Screen()
+
+    @Serializable
+    object LeaderboardScreen : Screen()
+
+    @Serializable
+    data class ResultScreen(
+        val score: Int,
+        val totalQuestions: Int
+    ) : Screen()
+
 }

@@ -12,5 +12,9 @@ data class QuizResultEntity(
     val score: Int,
     val totalQuestions: Int,
     val difficulty: Difficulty,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val categoryName: String,     // ➕ Add this
+    val unitId: Int,              // ➕ Add this
+    val unitName: String,          // ➕ Add this
+    val categoryIcon: String          // ➕ Add this
 )

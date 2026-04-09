@@ -19,17 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ResultScreenPre() {
-    ResultScreen(
-        score = 10,
-        totalQuestions = 10,
-        onBackToHome = { }
-
-    )
-}
 @Composable
 fun ResultScreen(
     score: Int,
@@ -56,7 +45,7 @@ fun ResultScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(gradientColors)
+                brush = Brush.verticalGradient(colors = listOf(Color(0xFF364B65), Color(0xFF4A5F7A)))
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -75,7 +64,7 @@ fun ResultScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Quiz Complete!",
+                text = "MCQ`s Complete!",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -184,16 +173,30 @@ fun ResultScreen(
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = Color(0xFF364B65)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Back to Home",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF364B65), Color(0xFF4A5F7A))
+                        )
+                    )
                 )
             }
         }
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ResultScreenPre() {
+    ResultScreen(
+        score = 10,
+        totalQuestions = 10,
+        onBackToHome = { }
+    )
+}

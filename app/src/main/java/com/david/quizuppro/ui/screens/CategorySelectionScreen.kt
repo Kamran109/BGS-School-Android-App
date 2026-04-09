@@ -1,5 +1,6 @@
 package com.david.quizuppro.ui.screens
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,28 +47,30 @@ fun CategorySelectionScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "QuizUp Pro",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        text = "BGS School",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 actions = {
-                    IconButton(onClick = onProfileClick) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile"
-                        )
-                    }
                     IconButton(onClick = onLeaderboardClick) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Leaderboard"
+                            contentDescription = "Leaderboard",
+                            tint = White
+                        )
+                    }
+                    IconButton(onClick = onProfileClick) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = White
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = DarkBlue ,
+                            titleContentColor = White
                 )
             )
         }
@@ -80,10 +84,9 @@ fun CategorySelectionScreen(
         ) {
             // Difficulty Selector
             Text(
-                text = "Select Difficulty",
+                text = "Select Subject",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             Row(
@@ -92,29 +95,22 @@ fun CategorySelectionScreen(
                     .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                DifficultyChip(
-                    difficulty = Difficulty.EASY,
-                    isSelected = selectedDifficulty == Difficulty.EASY,
-                    onSelect = { selectedDifficulty = Difficulty.EASY }
-                )
-                DifficultyChip(
-                    difficulty = Difficulty.MEDIUM,
-                    isSelected = selectedDifficulty == Difficulty.MEDIUM,
-                    onSelect = { selectedDifficulty = Difficulty.MEDIUM }
-                )
-                DifficultyChip(
-                    difficulty = Difficulty.HARD,
-                    isSelected = selectedDifficulty == Difficulty.HARD,
-                    onSelect = { selectedDifficulty = Difficulty.HARD }
-                )
+//                DifficultyChip(
+//                    difficulty = Difficulty.EASY,
+//                    isSelected = selectedDifficulty == Difficulty.EASY,
+//                    onSelect = { selectedDifficulty = Difficulty.EASY }
+//                )
+//                DifficultyChip(
+//                    difficulty = Difficulty.MEDIUM,
+//                    isSelected = selectedDifficulty == Difficulty.MEDIUM,
+//                    onSelect = { selectedDifficulty = Difficulty.MEDIUM }
+//                )
+//                DifficultyChip(
+//                    difficulty = Difficulty.HARD,
+//                    isSelected = selectedDifficulty == Difficulty.HARD,
+//                    onSelect = { selectedDifficulty = Difficulty.HARD }
+//                )
             }
-
-//            Text(
-//                text = "Choose a Category",
-//                style = MaterialTheme.typography.titleLarge,
-//                fontWeight = FontWeight.SemiBold,
-//                modifier = Modifier.padding(bottom = 24.dp)
-//            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -144,7 +140,7 @@ fun DifficultyChip(
         onClick = onSelect,
         label = { Text(difficulty.name) },
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedContainerColor = DarkBlue,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
         )
     )
@@ -156,7 +152,7 @@ fun CategoryCard(
     onClick: () -> Unit
 ) {
     val gradientColors = when (category.id) {
-        1 -> listOf(Color(0xFF364B65), Color(0xFF4A5F7A))
+        1 -> listOf(Color(0xFF364B65), Color(0xFF364B65))
         2 -> listOf(Color(0xFF364B65), Color(0xFF4A5F7A))
         3 -> listOf(Color(0xFF364B65), Color(0xFF4A5F7A))
         4 -> listOf(Color(0xFF364B65), Color(0xFF4A5F7A))

@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">QuizUp Pro</string>
+    <string name="app_name">BGS School</string>
+    <string name="take_quiz">Take Quiz</string>
+    <string name="expenseTracker">Expense Tracker</string>
+    <string name="smartBudgetingTrackingMadeEasy">Smart budgeting &amp; tracking made easy</string>
+
+
 </resources>

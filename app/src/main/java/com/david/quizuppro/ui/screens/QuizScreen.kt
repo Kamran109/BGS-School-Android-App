@@ -1,5 +1,6 @@
 package com.david.quizuppro.ui.screens
 
+import android.R
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,25 +26,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.david.quizuppro.model.Difficulty
 import com.david.quizuppro.model.Question
+import com.david.quizuppro.ui.theme.DarkBlue
+import com.david.quizuppro.ui.theme.NavyBlue
+import com.david.quizuppro.ui.theme.Pink40
+import com.david.quizuppro.ui.theme.White
 import com.david.quizuppro.viewmodel.QuizViewModel
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun QuizScreenPre() {
-    QuizScreen(
-        categoryId = 1,
-        categoryName = "Category",
-        difficulty = Difficulty.MEDIUM,
-        onBackPressed = { },
-        onQuizComplete = { _, _ -> },
-        viewModel = viewModel()
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
     categoryId: Int,
+    unitId: Int,
     categoryName: String,
     difficulty: Difficulty,
     onBackPressed: () -> Unit,
@@ -52,8 +45,8 @@ fun QuizScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(categoryId) {
-        viewModel.loadQuiz(categoryId, difficulty)
+    LaunchedEffect(unitId) {
+        viewModel.loadQuiz(categoryId,  unitId, difficulty)
     }
 
     LaunchedEffect(uiState.isQuizComplete) {
@@ -70,13 +63,14 @@ fun QuizScreen(
                         Text(
                             text = categoryName,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = White
                         )
-                        Text(
-                            text = difficulty.name,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+//                        Text(
+//                            text = difficulty.name,
+//                            style = MaterialTheme.typography.labelSmall,
+//                            color = White
+//                        )
                     }
                 },
                 actions = {
@@ -84,12 +78,13 @@ fun QuizScreen(
                         CircularProgressIndicator(
                             progress = { uiState.timeRemaining.toFloat() / (if (difficulty == Difficulty.HARD) 10 else if (difficulty == Difficulty.MEDIUM) 20 else 30) },
                             modifier = Modifier.size(36.dp),
-                            color = if (uiState.timeRemaining <= 5) Color.Red else MaterialTheme.colorScheme.primary,
+                            color = if (uiState.timeRemaining <= 5) Color.Red else White,
                         )
                         Text(
                             text = "${uiState.timeRemaining}",
                             style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = White
                         )
                     }
                 },
@@ -97,13 +92,14 @@ fun QuizScreen(
                     IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = White
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = DarkBlue,
+                    titleContentColor = White
                 )
             )
         }
@@ -126,13 +122,14 @@ fun QuizScreen(
                     Text(
                         text = "Question ${uiState.currentQuestionIndex + 1}/${uiState.questions.size}",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = DarkBlue
                     )
                     Text(
                         text = "Score: ${uiState.score}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = DarkBlue
                     )
                 }
 
@@ -142,6 +139,9 @@ fun QuizScreen(
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
+                        color = DarkBlue,           // ✅ Progress bar ka color
+                        trackColor = Pink40     // ✅ Background track ka color
+
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -161,6 +161,22 @@ fun QuizScreen(
     }
 }
 
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun QuestionCardPreview() {
+//    QuestionCard(
+//        question = Question(
+//            1,
+//            question = "What is the capital of France?",
+//            options = listOf("Paris", "London", "Berlin", "Madrid"),
+//            1
+//    ),
+//        selectedAnswerIndex = null,
+//        isAnswerSubmitted = false,
+//        onAnswerSelected = {}
+//    )
+//}
+
 @Composable
 fun QuestionCard(
     question: Question,
@@ -177,7 +193,7 @@ fun QuestionCard(
                 .fillMaxWidth()
                 .padding(bottom = 24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = DarkBlue
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
@@ -187,7 +203,7 @@ fun QuestionCard(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(20.dp),
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = White
             )
         }
 
@@ -272,7 +288,7 @@ fun AnswerOption(
                     .background(
                         when {
                             isAnswerSubmitted && (isCorrect || isSelected) -> Color.White.copy(alpha = 0.3f)
-                            else -> MaterialTheme.colorScheme.primaryContainer
+                            else -> DarkBlue
                         }
                     ),
                 contentAlignment = Alignment.Center
@@ -282,7 +298,7 @@ fun AnswerOption(
                     fontWeight = FontWeight.Bold,
                     color = when {
                         isAnswerSubmitted && (isCorrect || isSelected) -> Color.White
-                        else -> MaterialTheme.colorScheme.onPrimaryContainer
+                        else -> White
                     }
                 )
             }

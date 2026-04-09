@@ -32,6 +32,8 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+
+
 @Composable
 fun QuizUpProTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

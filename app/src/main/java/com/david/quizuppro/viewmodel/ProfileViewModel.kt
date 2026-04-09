@@ -3,9 +3,10 @@ package com.david.quizuppro.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.david.quizuppro.data.local.PrefsHelper
 import com.david.quizuppro.data.local.QuizDao
 import com.david.quizuppro.data.local.QuizResultEntity
-import com.david.quizuppro.data.local.UserPreferences
+//import com.david.quizuppro.data.local.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class ProfileViewModel(
     private val quizDao: QuizDao,
-    private val userPreferences: UserPreferences
+//    private val userPreferences: UserPreferences
+    private val userPreferences: PrefsHelper
 ) : ViewModel() {
 
     private val _username = MutableStateFlow(userPreferences.getUsername())
@@ -37,7 +39,7 @@ class ProfileViewModel(
 
 class ProfileViewModelFactory(
     private val quizDao: QuizDao,
-    private val userPreferences: UserPreferences
+    private val userPreferences: PrefsHelper
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {

@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.david.quizuppro.data.QuizRepository
+import com.david.quizuppro.data.local.PrefsHelper
 import com.david.quizuppro.data.local.QuizDao
 import com.david.quizuppro.data.local.QuizResultEntity
-import com.david.quizuppro.data.local.UserPreferences
+//import com.david.quizuppro.data.local.UserPreferences
 import com.david.quizuppro.data.remote.FirestoreRepository
 import com.david.quizuppro.model.Difficulty
 import com.david.quizuppro.model.Question
@@ -32,9 +33,14 @@ data class QuizUiState(
 class QuizViewModel(
     private val quizDao: QuizDao,
     private val firestoreRepository: FirestoreRepository,
-    private val userPreferences: UserPreferences,
+    private val userPreferences: PrefsHelper,
     private val externalScope: CoroutineScope
 ) : ViewModel() {
+
+    private var currentUnitId: Int = 0        // ✅ Add
+    private var currentCategoryName: String = "" // ✅ Add
+    private var currentUnitName: String = ""     // ✅ Add
+    private var currentCategoryIcon: String = ""     // ✅ Add
 
     private val _uiState = MutableStateFlow(QuizUiState())
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
@@ -42,9 +48,25 @@ class QuizViewModel(
     private var timerJob: Job? = null
     private var currentcategoryId: Int = 0
 
-    fun loadQuiz(categoryId: Int, difficulty: Difficulty) {
+    fun loadQuiz(
+        categoryId: Int,
+        unitId: Int,
+        difficulty: Difficulty
+    ) {
         currentcategoryId = categoryId
-        val questions = QuizRepository.getQuestionsForCategory(categoryId)
+
+        // Category name get karo
+        currentCategoryName = QuizRepository.categories
+            .find { it.id == categoryId }?.name ?: "Unknown"  // ✅ Add
+
+        // Category name get karo
+        currentCategoryIcon = QuizRepository.categories
+            .find { it.id == categoryId }?.name ?: "Unknown"  // ✅ Add
+
+        currentUnitName = QuizRepository.getUnitById(categoryId, unitId)?.name ?: "Unknown"
+
+        currentUnitId = unitId  // ✅ Save karo
+        val questions = QuizRepository.getQuestionsForUnit(categoryId, unitId)
         // In a real app, we might filter questions by difficulty here
         // For now, difficulty affects the timer: Easy=30s, Medium=20s, Hard=10s
         val timePerQuestion = when(difficulty) {
@@ -135,8 +157,12 @@ class QuizViewModel(
                 categoryId = currentcategoryId,
                 score = _uiState.value.score,
                 totalQuestions = _uiState.value.questions.size,
-                difficulty = _uiState.value.difficulty
-            )
+                difficulty = _uiState.value.difficulty,
+                categoryName = currentCategoryName,  // ✅ Use variable
+                unitId = currentUnitId,              // ✅ Use variable
+                unitName = currentUnitName,           // ✅ Use variable
+                categoryIcon = currentCategoryIcon           // ✅ Use variable
+                )
             quizDao.insertQuizResult(result)
         }
 
@@ -162,7 +188,7 @@ class QuizViewModel(
 class QuizViewModelFactory(
     private val quizDao: QuizDao,
     private val firestoreRepository: FirestoreRepository,
-    private val userPreferences: UserPreferences,
+    private val userPreferences: PrefsHelper,
     private val externalScope: CoroutineScope
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

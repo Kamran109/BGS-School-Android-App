@@ -4,18 +4,17 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.gms.google.services)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.david.quizuppro"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.david.quizuppro"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -62,20 +61,22 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Firebase Firestore
-
+    // ===== Firebase Firestore =====
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
 
-    // ViewModel
+    // ===== ViewModel =====
     implementation(libs.lifecycle.viewmodel.compose)
 
-    // Navigation
+    // ===== Navigation =====
     implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     // ===== ROOM DATABASE =====
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
 }
